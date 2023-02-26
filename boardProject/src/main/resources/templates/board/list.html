@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Board</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <link rel="stylesheet" href="/css/main.css" type="text/css"/>
+    <style>
+        @media (max-width: 918px){
+            .boardWriter {display: none;}
+            .boardRegisterDate	 {display: none;}
+            .boardUpdateDate {display: none;}
+            div#searchWrap { display: block; text-align: center; }
+            select{width: 100%;}
+            a.search{ width: 100%;}
+        }
+        div#searchWrap { display: flex; text-align: center; }
+        form[name='searchForm'] {overflow: hidden;}
+        select{width: 30%;}
+    </style>
+</head>
+<body class="is-preload">
+<!-- Main -->
+<div id="main">
+    <div class="wrapper">
+        <div class="inner">
+            <!-- Elements -->
+            <header class="major">
+                <h1>Board</h1>
+                <p>게시판 목록</p>
+            </header>
+            <!-- Table -->
+            <h3><a class="write button small">글 등록</a></h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                    <tr class="tHead">
+                        <th class="boardNumber">번호</th>
+                        <th class="boardTitle">제목</th>
+                        <th class="boardWriter">작성자</th>
+                        <th class="boardRegisterDate">작성일</th>
+                        <th class="boardUpdateDate">수정일</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <th:block th:each="board:${boards}">
+                        <tr class="tBody" th:object="${board}">
+                            <td class="boardNumber" th:text="*{boardNumber}"></td>
+                            <td class="boardTitle"><a class="read" th:text="*{boardTitle}" th:href="*{boardNumber}"></a></td>
+                            <td class="boardWriter" th:text="*{boardWriter}"></td>
+                            <td class="boardRegisterDate" th:text="*{boardRegisterDate}"></td>
+                            <td class="boardUpdateDate" th:text="*{boardUpdateDate}"></td>
+                        </tr>
+                    </th:block>
+                    </tbody>
+                </table>
+                <div th:object="${pagination}">
+                    <div style="text-align: center">
+                        <a class="changePage" th:href="*{startPage - 1}" th:if="*{prev}"><code><</code></a>
+                        <th:block th:each="page:${#numbers.sequence(pagination.startPage, pagination.endPage)}">
+                            <a class="changePage" th:href="${page}" th:if="${pagination.criteria.page != page}"><code th:text="${page}"></code></a>
+                            <code th:unless="${pagination.criteria.page != page}" th:text="${page}"></code>
+                        </th:block>
+                        <a class="changePage" th:href="*{endPage + 1}" th:if="*{next}"><code>></code></a>
+                    </div>
+                    <form th:action="@{/board/list}" th:object="${criteria}" name="pageForm">
+                        <input type="hidden" th:field="*{page}">
+                        <input type="hidden" th:field="*{amount}">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="/js/jquery.min.js"></script>
+<script src="/js/jquery.dropotron.min.js"></script>
+<script src="/js/browser.min.js"></script>
+<script src="/js/breakpoints.min.js"></script>
+<script src="/js/util.js"></script>
+<script src="/js/main.js"></script>
+<script th:inline="javascript">
+    let boardNumber = [[${boardNumber}]];
+    let $pages = $("a.changePage");
+    let queryString = [[${pagination.criteria.queryString}]];
+
+    const $read = $("a.read");
+
+    if(boardNumber != null){
+        alert(boardNumber + "번 게시글이 등록되었습니다.");
+    }
+
+    $("a.write").on("click", function(e){
+        e.preventDefault();
+        location.href = "/board/write";
+    });
+
+    $pages.on("click", function(e){
+        e.preventDefault();
+        $(document.pageForm.page).val($(this).attr("href"));
+        document.pageForm.submit();
+    });
+
+    $read.on("click", function(e){
+        e.preventDefault();
+        location.href = "/board/read" + queryString + "&boardNumber=" + $(this).attr("href");
+    });
+
+    $("a.write").on("click", function(e){
+        e.preventDefault();
+        location.href = "/board/write" + queryString;
+    });
+
+
+
+
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
